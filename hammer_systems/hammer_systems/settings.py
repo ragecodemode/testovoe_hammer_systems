@@ -1,16 +1,17 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
-load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv.get('SECRET_KEY')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    'django-insecure-sl^hga_jssexf8)zorrc%m)^=ua&rid=d40&u(+@noggf5!3t$'
+)
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
@@ -20,7 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users.appps.UsersConfig',
+    'users.apps.UsersConfig',
     'rest_framework',
     'rest_framework.authtoken',
 ]
@@ -55,13 +56,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hammer_systems.wsgi.application'
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.postgresql"),
+            "NAME": os.getenv("DB_NAME", "postgres"),
+            "USER": os.getenv("POSTGRES_USER", "postgres"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "postgres"),
+            "HOST": os.getenv("DB_HOST", "db"),
+            "PORT": os.getenv("DB_PORT", "5432"),
+        }
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -95,11 +107,14 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.UsersProfile'
+
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication"
+    ]
 }
